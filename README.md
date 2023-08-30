@@ -1,4 +1,4 @@
-# MyWorkoutsProject
+# Test task analyse bd
 
 Тестовое задание. Скрипт для фильтрации данных в cheaters.db и файлах client.csv и server.csv
 

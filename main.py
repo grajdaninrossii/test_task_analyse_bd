@@ -2,6 +2,7 @@ import sqlite3
 import pandas as pd
 import time
 from datetime import datetime
+from memory_profiler import profile
 
 
 class Database:
@@ -17,6 +18,7 @@ class Database:
     csv_server_url: str
     csv_client_url: str
 
+    # @profile
     def __init__(self, database_url, csv_server_url, csv_client_url):
         """ Создаем подключение к бд
         """
@@ -29,6 +31,7 @@ class Database:
         self.csv_client_url = csv_client_url
 
 
+    @profile
     def create_legal_user_table(self) -> str:
         """ Метод для создания таблицы, где будет сохраняться выборка
 
@@ -53,6 +56,7 @@ class Database:
         return "Таблица создана!"
 
 
+    # @profile
     def __uploading_data_from_csv_with_set_date(self) -> tuple[pd.DataFrame]:
         """Загружаем данные из csv
 
@@ -62,6 +66,7 @@ class Database:
         return pd.read_csv(self.csv_server_url, delimiter=","), pd.read_csv(self.csv_client_url, delimiter=",")
 
 
+    # @profile
     def __join_data_by_error(self, server: pd.DataFrame, client: pd.DataFrame) -> pd.DataFrame:
         """ Объединение датафреймов в один по error_id
 
@@ -76,6 +81,7 @@ class Database:
         return server.join(client.set_index('error_id'), on='error_id', lsuffix="_server", rsuffix="_client", how='inner')
 
 
+    # @profile
     def __exclude_cheaters_who_old_ban(self, dataframe: pd.DataFrame) -> list[pd.Series]:
         """ Метод для отчистки старых ошибок?
 
@@ -105,6 +111,7 @@ class Database:
         return result
 
 
+    # @profile
     def __print_data_legal_users_in_table(self):
         """ Процедура для сверки данных в таблице
         """
@@ -113,6 +120,7 @@ class Database:
         print(self.cursor.fetchall())
 
 
+    @profile # Самая тяжелая функция. В процессе ее выполнения потребляется до 550 Mib оперативной памяти
     def save_new_cheaters_in_table(self) -> str:
         """ Метод лдя сохранения данных относительно новых нарушениях
 
